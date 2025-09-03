@@ -6,20 +6,16 @@ on:
       - dev
 
 jobs:
-  create-pull-request:
+  create-pr:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repo
-        uses: actions/checkout@v3
-
-      - name: Create Pull Request to master
-        uses: peter-evans/create-pull-request@v5
+      - name: Create PR from dev to master
+        uses: peter-evans/pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          base: master
-          head: dev
+          source: dev
+          target: master
           title: "Automated PR: dev → master"
-          body: |
-            This pull request was automatically created by GitHub Actions.
+          body: "This pull request was automatically created on push to dev."
           draft: false
