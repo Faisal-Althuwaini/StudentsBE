@@ -10,7 +10,7 @@ pipeline {
 		stage('Checkout') {
 			steps {
 				git branch: 'master',
-				url: 'https://github.com/Faisal-Althuwaini/CalculatorBE.git'
+				url: 'https://github.com/Faisal-Althuwaini/StudentsBE.git'
 			}
 		}
 
@@ -44,13 +44,17 @@ pipeline {
 		}
 		success {
 			echo 'Pipeline completed successfully! Test2    '
-			mail to: 'fynth2@gmail.com, saalemx19@gmail.com, abdullahghomaidah@gmail.com',
-            subject: "Zo6: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+			mail to: 'fynth2@gmail.com',
+            subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
             body: "Good news! The build succeeded.\nCheck the build details here: ${env.BUILD_URL}"
 
 		}
 		failure {
 			echo 'Pipeline failed!'
+						mail to: 'fynth2@gmail.com',
+                        subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                        body: "Bad news! The build failed.\nCheck the build details here: ${env.BUILD_URL}"
+
 		}
 	}
 }
