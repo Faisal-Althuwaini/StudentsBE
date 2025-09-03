@@ -5,17 +5,39 @@ on:
     branches:
       - dev
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  create-pr:
+  create-pull-request:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create PR from dev to master
-        uses: peter-evans/pull-request@v5
+      - name: Checkout dev branch
+        uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          source: dev
-          target: master
-          title: "Automated PR: dev → master"
-          body: "This pull request was automatically created on push to dev."
-          draft: false
+          ref: dev
+
+      - name: Set up GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: Authenticate GitHub CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh auth login --with-token < <(echo "$GITHUB_TOKEN")
+
+      - name: Create or ensure PR exists
+        run: |
+          # Check if a PR already exists
+          PR=$(gh pr list --base master --head dev --state open --json number --jq '.[].number')
+
+          if [ -z "$PR" ]; then
+            gh pr create --base master --head dev \
+              --title "Automated PR: dev → master" \
+              --body "This pull request was auto-generated on push to dev."
+          else
+            echo "Pull request already exists: #$PR"
+          fi
